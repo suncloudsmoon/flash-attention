@@ -5,9 +5,7 @@
 name: Python Package
 
 # TODO @pierce - temporarily useful for debugging, should be removed before merge
-on:
-  push:
-    - '*'
+on: [push]
 
 jobs:
   release:
