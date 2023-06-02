@@ -59,6 +59,7 @@ class CustomInstallCommand(install):
             tag_name=f"v{flash_version}",
             wheel_name=wheel_filename
         )
+        print("Guessing wheel URL: ", wheel_url)
         
         try:
             urllib.request.urlretrieve(wheel_url, wheel_filename)
@@ -69,8 +70,6 @@ class CustomInstallCommand(install):
             # If the wheel could not be downloaded, build from source
             #install.run(self)
             raise ValueError
-
-        raise ValueError
 
 
 def get_cuda_bare_metal_version(cuda_dir):
