@@ -124,3 +124,18 @@ jobs:
         run: |
           ls -la dist
           ls -la dist/*
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --user --upgrade twine
+
+      - name: Build core package
+        run: |
+          python setup.py sdist --dist-dir=dist
+
+      - name: Deploy
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python -m twine upload dist/*
