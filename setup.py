@@ -10,7 +10,8 @@ from packaging.version import parse, Version
 from setuptools import setup, find_packages
 import subprocess
 
-import urllib
+import urllib.request
+import urllib.error
 import torch
 from torch.utils.cpp_extension import BuildExtension, CppExtension, CUDAExtension, CUDA_HOME
 
@@ -66,7 +67,10 @@ class CustomInstallCommand(install):
         except urllib.error.HTTPError:
             print("Precompiled wheel not found. Building from source...")
             # If the wheel could not be downloaded, build from source
-            install.run(self)
+            #install.run(self)
+            raise ValueError
+
+        raise ValueError
 
 
 def get_cuda_bare_metal_version(cuda_dir):
