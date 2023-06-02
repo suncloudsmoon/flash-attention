@@ -43,8 +43,10 @@ BASE_WHEEL_URL = "https://github.com/piercefreeman/flash-attention/releases/down
 
 class CustomInstallCommand(install):
     def run(self):
+        raise_if_cuda_home_none("flash_attn")
+
         # Determine the version numbers that will be used to determine the correct wheel
-        _, cuda_version = get_cuda_bare_metal_version()
+        _, cuda_version = get_cuda_bare_metal_version(CUDA_HOME)
         torch_version = torch.__version__
         python_version = f"cp{sys.version_info.major}{sys.version_info.minor}"
         platform_name = get_platform()
