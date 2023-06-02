@@ -44,6 +44,9 @@ BASE_WHEEL_URL = "https://github.com/piercefreeman/flash-attention/releases/down
 
 class CustomInstallCommand(install):
     def run(self):
+        if os.getenv("FLASH_ATTENTION_FORCE_BUILD", "FALSE") == "TRUE":
+            return install.run(self)
+
         raise_if_cuda_home_none("flash_attn")
 
         # Determine the version numbers that will be used to determine the correct wheel
