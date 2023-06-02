@@ -4,14 +4,35 @@
 
 name: Python Package
 
-# TODO @pierce - temporarily useful for debugging, should be removed before merge
-on: [push]
+on:
+  create:
+    tags:
+      - '**'
 
 jobs:
+  setup_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the tag version
+        id: extract_branch
+        run: echo ::set-output name=branch::${GITHUB_REF#refs/tags/}
+        shell: bash
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.extract_branch.outputs.branch }}
+          release_name: ${{ steps.extract_branch.outputs.branch }}
+
   build_wheels:
     name: Build Wheel
     runs-on: ${{ matrix.os }}
-    
+    needs: setup_release
+
     strategy:
       fail-fast: false
       matrix:
@@ -98,9 +119,16 @@ jobs:
           ls dist/*whl |xargs -I {} mv {} dist/${wheel_name}
           echo "wheel_name=${wheel_name}" >> $GITHUB_ENV
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload Release Asset
+        id: upload_release_asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: dist/${{env.wheel_name}}
+          upload_url: ${{ steps.get_current_release.outputs.upload_url }}
+          asset_path: ./${{env.wheel_name}}
+          asset_name: ${{env.wheel_name}}
+          asset_content_type: application/*
 
   publish_package:
     name: Publish package
@@ -110,11 +138,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: artifact
-          path: dist
 
       - uses: actions/setup-python@v4
         with:
