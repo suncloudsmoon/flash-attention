@@ -1,3 +1,4 @@
+# Modified the file to only build the flash-attn 1.0.9 wheel for 1.21.1 CUDA version for Kaggle/Colab
 # This workflow will:
 # - Create a new Github release
 # - Build wheels for supported architectures
